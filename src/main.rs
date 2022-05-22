@@ -25,12 +25,12 @@ fn main() {
 //        println!("{} - {}", i, format!("{}", item).bold().blue());
 //    }
     let indeces_stts = words_stts(&dictionary, &words);
-    for (index, word) in words.iter().enumerate() {
+    /*for (index, word) in words.iter().enumerate() {
         match indeces_stts[index] {
             1 => println!("{}", format!("{}", word).bold().blue()),
             _ => println!("{}", format!("{}", word).bold().red()),
         }
-    }
+    }*/
 }
 
 fn get_words (s: &str, vec: &mut Vec<String>) {
@@ -68,23 +68,32 @@ fn load_dictionary (dic: String) -> Option<Vec<String>> {
     }
 }
 
-fn words_stts (dic_words: &Vec<String>, vec_words: &Vec<String>) -> Vec<i8>{
-    let mut word_stts: Vec<i8> = Vec::new();
+fn words_stts (dic_words: &Vec<String>, vec_words: &Vec<String>) -> Vec<u8>{
+    let mut word_stts: Vec<u8> = Vec::new();
+    let mut init: usize = 0;
     
-    for word_in_text in vec_words.iter() {
-        for i in 0..dic_words.len() {
-            if word_in_text.to_string() == dic_words[i] {
-                word_stts.push(1);
+    for (indx, text_word) in vec_words.iter().enumerate() {
+        let text_bytes = text_word.as_bytes();
+        let text_first_char = text_bytes[0];
+         
+        for (i, dic_word) in dic_words.iter().enumerate() {
+            let dic_bytes = dic_word.as_bytes();
+            let dic_first_char = dic_bytes[0];
+            if dic_first_char == text_first_char {
+                init = i;
                 break;
             }
-            else if i == dic_words.len() - 1 {
-                word_stts.push(-1);
-            }
-            else {
-                continue;
-            }
         }
-    } 
 
+        let vec_dic = &dic_words[init..];
+        for word_in_dic in vec_dic.iter() {
+            if word_in_dic == text_word {
+                word_stts.push(1);
+                break;
+            }  
+        } 
+        init = 0;
+
+    }
     return word_stts;
 }
